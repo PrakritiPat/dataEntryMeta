@@ -20,7 +20,7 @@ public class datacollect : MonoBehaviour
 
     private void Update()
     {
-        //Save();
+        Save();
     }
 
     void Save()
@@ -50,7 +50,7 @@ public class datacollect : MonoBehaviour
 
         
 
-        /*int length = output.GetLength(0);
+        int length = output.GetLength(0);
         string delimiter = ",";
 
         StringBuilder sb = new StringBuilder();
@@ -62,7 +62,7 @@ public class datacollect : MonoBehaviour
 
         StreamWriter outStream = System.IO.File.CreateText(filePath);
         outStream.WriteLine(sb);
-        outStream.Close();*/
+        outStream.Close();
     }
 
 
