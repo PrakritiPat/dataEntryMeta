@@ -14,6 +14,7 @@ public class datacollect : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Save();
         objectTransform = GetComponent<Transform>(); // Assign the object's transform
         Save();
     }
