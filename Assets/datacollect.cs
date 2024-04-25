@@ -8,38 +8,44 @@ using System;
 public class datacollect : MonoBehaviour
 {
 
-    public List<string[]> rowData = new List<string[]>();
-    public Transform objectTransform; // Reference to the object's transform
-
+    [SerializeField] List<string[]> rowData = new List<string[]>();
+    [SerializeField] Transform objectTransform; // Reference to the object's transform
+    [SerializeField] List<Transform> transformList;
+    
     // Use this for initialization
     void Start()
     {
-        Save();
-        objectTransform = GetComponent<Transform>(); // Assign the object's transform
-        Save();
-    }
+        //fill list of all transforms we're tracking
 
-    private void Update()
-    {
-        Save();
-    }
-
-    void Save()
-    {
         // Creating First row of titles manually..
+        //loop through the list of transforms to see how many inputs we need (position xyz, rotation xyz)
+
         string[] rowDataTemp = new string[3]; // Modified to hold XYZ coordinates
         rowDataTemp[0] = "X";
         rowDataTemp[1] = "Y";
         rowDataTemp[2] = "Z";
         rowData.Add(rowDataTemp);
 
+    }
+
+    private void Update()
+    {
+       Save();
+    }
+
+    void Save()
+    {
+        string[] rowDataTemp = new string[3];
         // Collect and save the XYZ coordinates
         rowDataTemp = new string[3];
-        Vector3 position = objectTransform.position; // Get object's position
-        rowDataTemp[0] = position.x.ToString(); // X coordinate
-        rowDataTemp[1] = position.y.ToString(); // Y coordinate
-        rowDataTemp[2] = position.z.ToString(); // Z coordinate
-        rowData.Add(rowDataTemp);
+        for (int i = 0; i < transformList.length(); i++)
+        {
+            Vector3 position = objectTransform.position; // Get object's position
+            rowDataTemp[0] = position.x.ToString(); // X coordinate
+            rowDataTemp[1] = position.y.ToString(); // Y coordinate
+            rowDataTemp[2] = position.z.ToString(); // Z coordinate
+            rowData.Add(rowDataTemp);
+        }
 
         string[][] output = new string[rowData.Count][];
 
@@ -81,5 +87,7 @@ public class datacollect : MonoBehaviour
         #endif
     }
 }
+
+
 
 
