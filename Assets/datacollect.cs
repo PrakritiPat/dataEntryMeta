@@ -11,7 +11,7 @@ public class datacollect : MonoBehaviour
     [SerializeField] List<string[]> rowData = new List<string[]>();
     [SerializeField] Transform objectTransform; // Reference to the object's transform
     [SerializeField] List<Transform> transformList;
-    
+
     // Use this for initialization
     void Start()
     {
@@ -30,15 +30,24 @@ public class datacollect : MonoBehaviour
 
     private void Update()
     {
-       Save();
+        Save();
     }
 
     void Save()
     {
+        string filePath = getPath();
+
+        // Check if file already exists
+        if (File.Exists(filePath))
+        {
+            // If file exists, do nothing and exit the method
+            return;
+        }
+
         string[] rowDataTemp = new string[3];
         // Collect and save the XYZ coordinates
         rowDataTemp = new string[3];
-        for (int i = 0; i < transformList.length(); i++)
+        for (int i = 0; i < transformList.Count; i++)
         {
             Vector3 position = objectTransform.position; // Get object's position
             rowDataTemp[0] = position.x.ToString(); // X coordinate
@@ -55,8 +64,6 @@ public class datacollect : MonoBehaviour
             Debug.Log(rowData[i]);
         }
 
-        
-
         int length = output.GetLength(0);
         string delimiter = ",";
 
@@ -65,29 +72,22 @@ public class datacollect : MonoBehaviour
         for (int index = 0; index < length; index++)
             sb.AppendLine(string.Join(delimiter, output[index]));
 
-        string filePath = getPath();
-
+        // Write data to file
         StreamWriter outStream = System.IO.File.CreateText(filePath);
         outStream.WriteLine(sb);
         outStream.Close();
     }
-
-
-    // Following method is used to retrieve the relative path as device platform
     private string getPath()
     {
-        #if UNITY_EDITOR
-                return Application.dataPath + "/CSV/" + "Saved_data.csv";
-        #elif UNITY_ANDROID
-                return Application.persistentDataPath + "Saved_data.csv";
-        #elif UNITY_IPHONE
-                return Application.persistentDataPath + "/" + "Saved_data.csv";
-        #else
-                return Application.dataPath + "/" + "Saved_data.csv";
-        #endif
+        string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss"); // Get current timestamp
+#if UNITY_EDITOR
+        return Application.dataPath + "/CSV/" + "Saved_data_" + timestamp + ".csv";
+#elif UNITY_ANDROID
+            return Application.persistentDataPath + "Saved_data_" + timestamp + ".csv";
+#elif UNITY_IPHONE
+            return Application.persistentDataPath + "/" + "Saved_data_" + timestamp + ".csv";
+#else
+            return Application.dataPath + "/" + "Saved_data_" + timestamp + ".csv";
+#endif
     }
 }
-
-
-
-
