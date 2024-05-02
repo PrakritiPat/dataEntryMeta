@@ -28,16 +28,16 @@ public class datacollect : MonoBehaviour
             outStream = System.IO.File.AppendText(filePath);
         }
 
-        // Write the initial row for object name, position X, position Y, position Z
-        outStream.WriteLine("Object Name,Position X,Position Y,Position Z");
+        // Write the initial row for object name, position X, position Y, position Z, rotation X, rotation Y, rotation Z
+        outStream.WriteLine("Object Name,Position X,Position Y,Position Z,Rotation X,Rotation Y,Rotation Z");
 
-        // Start tracking position changes
-        StartCoroutine(TrackPosition());
+        // Start tracking position and rotation changes
+        StartCoroutine(TrackPositionAndRotation());
     }
 
-    IEnumerator TrackPosition()
+    IEnumerator TrackPositionAndRotation()
     {
-        // Track positions indefinitely
+        // Track positions and rotations indefinitely
         while (true)
         {
             // Get all GameObjects in the scene
@@ -46,15 +46,17 @@ public class datacollect : MonoBehaviour
             // Iterate over each object
             foreach (GameObject obj in allObjects)
             {
-                // Get the object's name and position
+                // Get the object's name, position, and rotation
                 string objectName = obj.name;
                 Vector3 position = obj.transform.position;
+                Vector3 rotation = obj.transform.eulerAngles;
 
-                // Write the object's name and position to the CSV file
-                outStream.WriteLine(objectName + "," + position.x + "," + position.y + "," + position.z);
+                // Write the object's name, position, and rotation to the CSV file
+                outStream.WriteLine(objectName + "," + position.x + "," + position.y + "," + position.z + "," +
+                                    rotation.x + "," + rotation.y + "," + rotation.z);
             }
 
-            // Wait for some time before tracking positions again
+            // Wait for some time before tracking positions and rotations again
             yield return new WaitForSeconds(1f); // Adjust this time interval as needed
         }
     }
@@ -91,6 +93,7 @@ public class datacollect : MonoBehaviour
         }
     }
 }
+
 
 /* original code izzy changed 4/29
 using UnityEngine;
