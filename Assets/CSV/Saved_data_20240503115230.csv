@@ -1,0 +1,28 @@
+Object Name,Position X,Position Y,Position Z,Rotation X,Rotation Y,Rotation Z
+[Debug Updater],0,0,0,0,0,0
+Main Camera,0,1,-10,0,0,0
+Directional Light,0,3,0,50,330,0
+Printer,7.58,-0.21,-4.39,0,0,0
+Global Volume,0.127,0,0,0,0,0
+Sphere,3.92,0.33,-3.68,0,0,0
+Cube,6.57,0.18,-2.86,0,0,0
+Plane,4.478086,-0.1508079,-4.372488,0,0,0
+Cursor,3.587882,0.1530141,-3.491338,0,0,0
+[Debug Updater],0,0,0,0,0,0
+Main Camera,0,1,-10,0,0,0
+Directional Light,0,3,0,50,330,0
+Printer,7.58,-0.21,-4.39,0,0,0
+Global Volume,0.127,0,0,0,0,0
+Sphere,3.92,0.33,-3.68,0,0,0
+Cube,6.57,0.18,-2.86,0,0,0
+Plane,4.478086,-0.1508079,-4.372488,0,0,0
+Cursor,-0.08313834,0.8328289,-9.7,0,0,0
+[Debug Updater],0,0,0,0,0,0
+Main Camera,0,1,-10,0,0,0
+Directional Light,0,3,0,50,330,0
+Printer,7.58,-0.21,-4.39,0,0,0
+Global Volume,0.127,0,0,0,0,0
+Sphere,3.92,0.33,-3.68,0,0,0
+Cube,6.57,0.18,-2.86,0,0,0
+Plane,4.478086,-0.1508079,-4.372488,0,0,0
+Cursor,0.002487035,1.217571,-9.7,0,0,0
