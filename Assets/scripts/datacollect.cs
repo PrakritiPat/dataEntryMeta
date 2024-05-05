@@ -101,16 +101,20 @@ using System.Text;
 using System.IO;
 using System;
 
-public class datacollect : MonoBehaviour
+public class DataCollect : MonoBehaviour
 {
     string filePath; // Path to the CSV file
     StreamWriter outStream; // Stream writer to write to the file
+    Camera mainCamera; // Reference to the main camera
 
     // Use this for initialization
     void Start()
     {
+        // Get the main camera reference
+        mainCamera = Camera.main;
+
         // Get the file path
-        filePath = getPath();
+        filePath = GetPath();
 
         // Check if file already exists
         if (!File.Exists(filePath))
@@ -142,15 +146,15 @@ public class datacollect : MonoBehaviour
             // Iterate over each object
             foreach (GameObject obj in allObjects)
             {
-                // Get the object's name, position, and rotation
+                // Get the object's name, position, and rotation relative to the main camera
                 string objectName = obj.name;
-                Vector3 position = obj.transform.position;
-                Vector3 rotation = obj.transform.eulerAngles;
+                Vector3 relativePosition = mainCamera.transform.InverseTransformPoint(obj.transform.position);
+                Vector3 relativeRotation = obj.transform.eulerAngles - mainCamera.transform.eulerAngles;
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"); // Get current timestamp
 
                 // Write the object's name, position, rotation, and timestamp to the CSV file
-                outStream.WriteLine(objectName + "," + position.x + "," + position.y + "," + position.z + "," +
-                                    rotation.x + "," + rotation.y + "," + rotation.z + "," + timestamp);
+                outStream.WriteLine(objectName + "," + relativePosition.x + "," + relativePosition.y + "," + relativePosition.z + "," +
+                                    relativeRotation.x + "," + relativeRotation.y + "," + relativeRotation.z + "," + timestamp);
             }
 
             // Wait for some time before tracking positions and rotations again
@@ -166,7 +170,7 @@ public class datacollect : MonoBehaviour
     }
 
     // Function to get the file path based on the platform
-    private string getPath()
+    private string GetPath()
     {
         string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss"); // Get current timestamp
 #if UNITY_EDITOR
@@ -190,4 +194,5 @@ public class datacollect : MonoBehaviour
         }
     }
 }
+
 
