@@ -95,102 +95,89 @@ public class datacollect : MonoBehaviour
 }*/
 
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System;
+using System.IO;
 
-public class DataCollect : MonoBehaviour
+public class EyeCursorController : MonoBehaviour
 {
-    string filePath; // Path to the CSV file
-    StreamWriter outStream; // Stream writer to write to the file
-    Camera mainCamera; // Reference to the main camera
+    public OVRCameraRig ovrCameraRig; // Reference to the OVRCameraRig
+    public string folderName = "EyeCursor";
+    public string fileNamePrefix = "EyeGazeData";
+    private StreamWriter writer;
+    public GameObject cursor;
 
-    // Use this for initialization
     void Start()
     {
-        // Get the main camera reference
-        mainCamera = Camera.main;
-
-        // Get the file path
-        filePath = GetPath();
-
-        // Check if file already exists
-        if (!File.Exists(filePath))
+        // Check if the OVRCameraRig is assigned
+        if (ovrCameraRig == null)
         {
-            // If file doesn't exist, create a new one
-            CreateNewFile();
-        }
-        else
-        {
-            // If file exists, open it in append mode
-            outStream = System.IO.File.AppendText(filePath);
+            Debug.LogError("OVRCameraRig is not assigned.");
+            return;
         }
 
-        // Write the initial row for object name, position X, position Y, position Z, rotation X, rotation Y, rotation Z, and timestamp
-        outStream.WriteLine("Object Name,Position X,Position Y,Position Z,Rotation X,Rotation Y,Rotation Z,Timestamp");
+        // Create the directory if it doesn't exist
+        string directoryPath = Path.Combine(Application.dataPath, folderName);
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
 
-        // Start tracking position and rotation changes
-        StartCoroutine(TrackPositionAndRotation());
+        // Generate a unique file name with a timestamp
+        string timeStamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        string fileName = $"{fileNamePrefix}_{timeStamp}.csv";
+
+        // Create/Open the CSV file for writing
+        string filePath = Path.Combine(directoryPath, fileName);
+        writer = new StreamWriter(filePath, false); // Overwrite any existing file
+
+        // Record screen dimensions
+        int screenWidth = Screen.width;
+        int screenHeight = Screen.height;
+
+        // Record screen dimensions and write header to CSV
+        writer.WriteLine($"Timestamp,3dX,3dY,3dZ,2dX,2dY,ScreenWidth,ScreenHeight");
+        writer.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")},{screenWidth},{screenHeight}");
+        writer.Flush();
     }
 
-    IEnumerator TrackPositionAndRotation()
+    void Update()
     {
-        // Track positions and rotations indefinitely
-        while (true)
+        // Get the current timestamp
+        string timeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+        // Perform raycast from OVRCameraRig into the scene
+        Camera centerEyeCamera = ovrCameraRig.centerEyeAnchor.camera;
+        Ray ray = centerEyeCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
         {
-            // Get all GameObjects in the scene
-            GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+            Debug.Log("Raycast hit: " + hit.collider.gameObject.name);
 
-            // Iterate over each object
-            foreach (GameObject obj in allObjects)
-            {
-                // Get the object's name, position, and rotation relative to the main camera
-                string objectName = obj.name;
-                Vector3 relativePosition = mainCamera.transform.InverseTransformPoint(obj.transform.position);
-                Vector3 relativeRotation = obj.transform.eulerAngles - mainCamera.transform.eulerAngles;
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"); // Get current timestamp
+            // Calculate gaze position relative to camera
+            Vector3 gazePosition = hit.point - centerEyeCamera.transform.position;
 
-                // Write the object's name, position, rotation, and timestamp to the CSV file
-                outStream.WriteLine(objectName + "," + relativePosition.x + "," + relativePosition.y + "," + relativePosition.z + "," +
-                                    relativeRotation.x + "," + relativeRotation.y + "," + relativeRotation.z + "," + timestamp);
-            }
+            // Calculate cursor position relative to camera
+            Vector3 cursorPosition = cursor.transform.position - centerEyeCamera.transform.position;
 
-            // Wait for some time before tracking positions and rotations again
-            yield return new WaitForSeconds(1f); // Adjust this time interval as needed
+            // Save data to CSV with timestamp
+            writer.WriteLine($"{timeStamp},{gazePosition.x},{gazePosition.y},{gazePosition.z},{Input.mousePosition.x},{Input.mousePosition.y}," +
+                             $"{Screen.width},{Screen.height}");
+
+            Debug.Log($"Timestamp: {timeStamp}, 2D: {Input.mousePosition}, 3D: {gazePosition}");
+
+            // Update cursor position in world space based on relative position
+            cursor.transform.position = centerEyeCamera.transform.position + cursorPosition;
         }
     }
 
-    // Function to create a new CSV file
-    void CreateNewFile()
+    void OnDestroy()
     {
-        // Open a new file at the specified path
-        outStream = System.IO.File.CreateText(filePath);
-    }
-
-    // Function to get the file path based on the platform
-    private string GetPath()
-    {
-        string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss"); // Get current timestamp
-#if UNITY_EDITOR
-        return Application.dataPath + "/CSV/" + "Saved_data_" + timestamp + ".csv";
-#elif UNITY_ANDROID
-        return Application.persistentDataPath + "Saved_data_" + timestamp + ".csv";
-#elif UNITY_IPHONE
-        return Application.persistentDataPath + "/" + "Saved_data_" + timestamp + ".csv";
-#else
-        return Application.dataPath + "/" + "Saved_data_" + timestamp + ".csv";
-#endif
-    }
-
-    // Function to handle closing the file stream when the application quits
-    void OnApplicationQuit()
-    {
-        // Close the file stream
-        if (outStream != null)
+        // Close the StreamWriter when the script is destroyed
+        if (writer != null)
         {
-            outStream.Close();
+            writer.Flush();
+            writer.Close();
         }
     }
 }
