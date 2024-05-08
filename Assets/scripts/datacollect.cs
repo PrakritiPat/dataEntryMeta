@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -92,9 +92,8 @@ public class datacollect : MonoBehaviour
             outStream.Close();
         }
     }
-}
+}*/
 
-/*
 using UnityEngine;
 using System;
 using System.IO;
@@ -184,4 +183,3 @@ public class EyeCursorController : MonoBehaviour
 }
 
 
-*/

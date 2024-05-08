@@ -136,7 +136,7 @@ public class EyeCursorController : MonoBehaviour
         string timeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
         // Perform raycast from OVRCameraRig into the scene
-        Camera centerEyeCamera = ovrCameraRig.centerEyeAnchor.GetComponent<Camera>();
+        Camera centerEyeCamera = ovrCameraRig.centerEyeAnchor.camera;
         Ray ray = centerEyeCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -176,7 +176,7 @@ public class EyeCursorController : MonoBehaviour
 
 
 /*
-/eye:
+//eye:
 using UnityEngine;
 using System;
 using System.IO;
